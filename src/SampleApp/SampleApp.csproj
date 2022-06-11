@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gen\SMF.EFModel.Generator\SMF.EFModel.Generator.csproj" GeneratePathProperty="true" OutputItemType="Analyzer" ReferenceOutputAssembly="True" />
+    <ProjectReference Include="..\..\gen\SMF.SourceGenerator.Core\SMF.SourceGenerator.Core.csproj" GeneratePathProperty="true" OutputItemType="Analyzer" ReferenceOutputAssembly="True" />
+  </ItemGroup>
+
+  <ItemGroup>
+  	<AdditionalFiles Include="..\..\model.ism" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="..\SampleApp\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\SampleApp\.editorconfig" />
+  </ItemGroup>
+</Project>
