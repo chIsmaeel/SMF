@@ -1,0 +1,34 @@
+﻿# model_namespace=PROJECT_NAME.Entities.Model
+# default_accessor=set
+
+person: record
+  Id: int accessor:init
+  Name: string accessor:private_set
+  Age: student1 accessor:set
+
+
+
+
+student1: record
+  Id: int accessor:set
+  Name: string
+  Age: student2
+
+student2: record
+  Id: int 
+  Name: string
+  Age: int
+
+
+
+
+student3: record
+  Id: int 
+  Name: string
+  Age: intw
+
+
+student4: record
+  Id: int 
+  Name: string
+  Age: int

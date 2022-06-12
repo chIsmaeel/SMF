@@ -4,15 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+      <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+      <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\gen\SMF.EFModel.Generator\SMF.EFModel.Generator.csproj" GeneratePathProperty="true" OutputItemType="Analyzer" ReferenceOutputAssembly="True" />
-    <ProjectReference Include="..\..\gen\SMF.SourceGenerator.Core\SMF.SourceGenerator.Core.csproj" GeneratePathProperty="true" OutputItemType="Analyzer" ReferenceOutputAssembly="True" />
-  </ItemGroup>
-
-  <ItemGroup>
-  	<AdditionalFiles Include="..\..\model.ism" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,4 +21,15 @@
   <ItemGroup>
     <None Include="..\SampleApp\.editorconfig" />
   </ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\person.smf" />
+        <AdditionalFiles Include="..\..\students.smf" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="4.2.0" />
+      <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.2.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
 </Project>

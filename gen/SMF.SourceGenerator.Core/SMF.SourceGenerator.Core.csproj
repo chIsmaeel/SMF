@@ -5,10 +5,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<LangVersion>preview</LangVersion>
+
+      <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <IncludeSymbols>True</IncludeSymbols>
+      <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Humanizer" Version="2.14.1" />
+    <PackageReference Include="Humanizer.Core" Version="2.14.1" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
       <PrivateAssets>all</PrivateAssets>
@@ -17,16 +22,16 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
   </ItemGroup>
 
-	<PropertyGroup>
+	<!--<PropertyGroup>
 		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<Target Name="GetDependencyTargetPaths">
 		<ItemGroup>
-			<TargetPathWithTargetPlatformMoniker Include="$(PKHumanizer)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-	</Target>
+            <TargetPathWithTargetPlatformMoniker Include="$(PKGHumanizer_Core)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+            <TargetPathWithTargetPlatformMoniker Include="..\..\gen\SMF.SourceGenerator.Abstractions\bin\Debug\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+        </ItemGroup>
+	</Target>-->
 
 	<ItemGroup>
 	  <EditorConfigFiles Remove="..\SMF.SourceGenerator.Core\.editorconfig" />
@@ -34,6 +39,13 @@
 
 	<ItemGroup>
 	  <None Include="..\SMF.SourceGenerator.Core\.editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SMF.SourceGenerator.Abstractions\SMF.SourceGenerator.Abstractions.csproj">
+	    <Private>True</Private>
+	    <ReferenceOutputAssembly>True</ReferenceOutputAssembly>
+	  </ProjectReference>
 	</ItemGroup>
 
 </Project>

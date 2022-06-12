@@ -2,18 +2,15 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using SMF.SourceGenerator.Abstractions.Helpers;
+using System.Collections.Immutable;
 
 /// <summary>
 /// The incremetnal generator.
 /// </summary>
-public abstract class IncrementalGenerator : IIncrementalGenerator
+public abstract class IncrementalGenerator : IncrementalGeneratorBase
 {
-
-    /// <summary>
-    /// Initializes the.
-    /// </summary>
-    /// <param name="context">The context.</param>
-    public void Initialize(IncrementalGeneratorInitializationContext context)
+    public override void Initialize(IncrementalGeneratorInitializationContext context)
     {
         CreateSyntaxNode(context.SyntaxProvider);
         AdditionalTextsProvider(context.AdditionalTextsProvider);
@@ -22,36 +19,53 @@ public abstract class IncrementalGenerator : IIncrementalGenerator
         Execute(context);
     }
 
-    /// <summary>
-    /// Posts the initialization.
-    /// </summary>
-    /// <param name="context">The context.</param>
-    protected virtual void PostInitialization(IncrementalGeneratorInitializationContext context)
-    { }
+    protected virtual Action<SyntaxValueProvider> CreateSyntaxNode => _ => { };
+    protected virtual Action<IncrementalValuesProvider<AdditionalText>> AdditionalTextsProvider =>
+        at =>
+            SMFFilesAdditionalTexts = at.Where(static f => f.Path.EndsWith(".smf"));
+    protected virtual Action<IncrementalGeneratorInitializationContext> PostInitialization => _ => { };
+    protected virtual Action<IncrementalValueProvider<AnalyzerConfigOptionsProvider>> AnalyzerConfigOptionsProvider => _ =>
+    {
+        GlobalOptions = _.Select(static (r, _) => new GlobalOptions(r));
+    };
+    protected abstract Action<IncrementalGeneratorInitializationContext> Execute { get; }
 
-    /// <summary>
-    /// Analyzers the config options provider.
-    /// </summary>
-    /// <param name="analyzerConfigOptionsProvider">The analyzer config options provider.</param>
-    protected abstract void AnalyzerConfigOptionsProvider(IncrementalValueProvider<AnalyzerConfigOptionsProvider> analyzerConfigOptionsProvider);
 
-    /// <summary>
-    /// Additionals the texts provider.
-    /// </summary>
-    /// <param name="additionalTextsProvider">The additional texts provider.</param>
-    protected abstract void AdditionalTextsProvider(IncrementalValuesProvider<AdditionalText> additionalTextsProvider);
+    protected IncrementalValuesProvider<AdditionalText> SMFFilesAdditionalTexts { get; private set; }
+    protected IncrementalValueProvider<GlobalOptions> GlobalOptions { get; private set; }
 
-    /// <summary>
-    /// Executes the.
-    /// </summary>
-    /// <param name="context">The context.</param>
-    protected abstract void Execute(IncrementalGeneratorInitializationContext context);
+    protected IncrementalValuesProvider<string> SMFFileStrings =>
+         SMFFilesAdditionalTexts.Select(static (r, _) =>
+         {
+             var text = r.GetText();
+             if (text != null)
+                 return text.ToString();
+             return "";
+         })!;
 
-    /// <summary>
-    /// Creates the syntax node.
-    /// </summary>
-    /// <param name="syntaxProvider">The syntax provider.</param>
-    protected virtual void CreateSyntaxNode(SyntaxValueProvider syntaxProvider) { }
+    protected IncrementalValueProvider<ImmutableArray<string>> SMFFileStringsCollection =>
+        SMFFileStrings.Collect();
+
+    protected IncrementalValuesProvider<SMFFile> SMFFiles =>
+        SMFFileStrings.Combine(GlobalOptions).Select(static (r, _) =>
+        {
+            var obj = new SMFFile(r.Left, r.Right);
+            foreach (var record in obj.SMFRecords)
+                SMFKeywords.Records.Add(record.RecordName);
+            return obj;
+        });
+
+    protected IncrementalValuesProvider<SMFRecord> SMFRecords =>
+    SMFFiles.Collect().SelectMany(static (r, _) =>
+    {
+        var tempRecordList = new List<SMFRecord>();
+        foreach (var record in r.SelectMany(_ => _.SMFRecords))
+            tempRecordList.Add(record);
+        return tempRecordList;
+    });
+
+    //protected IncrementalValuesProvider<SMFRecord> SMFRecords =>
+    //  SMFFileStrings.Select(static (r, _) => new SMFRecord(r));
 }
 
 //#if DEBUG
